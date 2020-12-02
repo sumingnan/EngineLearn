@@ -79,27 +79,27 @@ private:
 
 当前姿势：在动画某个时间点上的关节姿势（用下标C表示）。
 
-在某个时刻：在绑定姿势时，该顶点的模型空间位置为![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpsoJU8VQ.png)，蒙皮过程中要计算出该顶点在当前姿势的模型空间坐标位置为![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpsj37R8m.png)，如下图所示：
+在某个时刻：在绑定姿势时，该顶点的模型空间位置为![gong1](image/gong1.png)，蒙皮过程中要计算出该顶点在当前姿势的模型空间坐标位置为![gong2](image/gong2.png)，如下图所示：
 
 ![image-20200317230710370](image/skeleton3.png)
 
 **求蒙皮矩阵的“诀窍”在于领会到，顶点绑定到关节的位置时，在该关节空间中是不变的，变的只是关节（所以才称为骨骼动画）。**因此，我们可以把顶点于模型空间中的绑定姿势位置转换到关节空间，在把关节移至当前姿势，最后把顶点转会模型空间。此模型空间至关节空间在返回模型空间的变换过程，其效果就是把顶点从绑定姿势“变换”到当前姿势。
 
-参考以下图：假设![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpsJymiAr.png)在绑定姿势的模型坐标为（4，6），我们先把此顶点变换至对应的关节空间坐标![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpsjDO7sf.png)，在图中大约是（1，3）。由于此顶点绑定到该关节，无论该关节怎么移动，次顶点在关节空间的坐标一直是（1，3）。当我们把关节设置为当前得到的当前姿势，我们把顶点从模型空间的（4，6）变形至（18，2），整个过程中是由于该关节从其绑定姿势移动到图中当前姿势所驱动的。
+参考以下图：假设![gong3](image/gong3.png)在绑定姿势的模型坐标为（4，6），我们先把此顶点变换至对应的关节空间坐标![gong4](image/gong4.png)，在图中大约是（1，3）。由于此顶点绑定到该关节，无论该关节怎么移动，次顶点在关节空间的坐标一直是（1，3）。当我们把关节设置为当前得到的当前姿势，我们把顶点从模型空间的（4，6）变形至（18，2），整个过程中是由于该关节从其绑定姿势移动到图中当前姿势所驱动的。
 
 ![image-20200317230806457](image/skeleton4.png)
 
-我们用矩阵![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpsjCGbWa.png)表示关节j在模型空间的绑定姿势。此矩阵把点从关节j的空间变换到模型空间。现在考虑一个以模型空间表示的绑定姿势顶点![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpsX6tPag.png)，要把此顶点变换至关节j的空间，我们只需简单的乘以绑定姿势的逆矩阵，即![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wps0sN6s5.png):
+我们用矩阵![gong5](image/gong5.png)表示关节j在模型空间的绑定姿势。此矩阵把点从关节j的空间变换到模型空间。现在考虑一个以模型空间表示的绑定姿势顶点![gong6](image/gong6.png)，要把此顶点变换至关节j的空间，我们只需简单的乘以绑定姿势的逆矩阵，即![gong7](image/gong7.png):
 
-![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wps9Jpe89.png)。
+![gong8](image/gong8.png)。
 
-类似的，我们以矩阵![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpsDKvkyO.png)表示关节的当前姿势。那么要把![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpshzibIH.png)从关节空间转回模型空间，我们只需把它乘以当前姿势矩阵：
+类似的，我们以矩阵![gong9](image/gong9.png)表示关节的当前姿势。那么要把![gong10](image/gong10.png)从关节空间转回模型空间，我们只需把它乘以当前姿势矩阵：
 
-若使用以上推导方程展开![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpsoWt7rl.png)，就能得到把顶点直接从绑定姿势变换至当前姿势的方程：
+若使用以上推导方程展开![gong11](image/gong11.png)，就能得到把顶点直接从绑定姿势变换至当前姿势的方程：
 
-![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpsoiE6pq.png)
+![gong12](image/gong12.png)
 
-联合后生成的矩阵![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpsvLN1kY.png)=![img](file:////private/var/folders/6r/wfh74tm12cb4y9_5wdlrxly40000gn/T/com.kingsoft.wpsoffice.mac/wps-sumingnan/ksohtml/wpsOJeidf.png)称为蒙皮矩阵。
+联合后生成的矩阵![gong13](image/gong13.png)=![gong14](image/gong14.png)称为蒙皮矩阵。
 
 ##### Urho3D 骨骼动画系统流程
 
